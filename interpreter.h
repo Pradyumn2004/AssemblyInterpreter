@@ -5,6 +5,7 @@
 #include <string>
 #include <map>
 #include <stack>
+// #include <conio.h>
 #include <vector>
 #include <sstream>
 #include "instructionParser.h"
@@ -156,11 +157,66 @@ public:
         else if(opcode == "PUSH") {
             stk.push(ACC);
         }
+        else if(opcode == "POP") {
+            ACC = stk.top();
+            stk.pop();
+        }
+        else if(opcode == "CALL") {
+            stk.push(PC);
+            PC = labels[currentInstruction.operand1];
+        }
+        else if(opcode == "RET") {
+            PC = stk.top();
+            stk.pop();
+        }
+        else if(opcode == "HLT") {
+            toQuit = true;
+        }
+        else if(opcode == "IN"){
+            cout << "Enter a number: ";
+            cin >> ACC;
+            PC++;
+        }
+        else if(opcode == "OUT"){
+            cout << "Output: " << ACC << endl;
+            PC++;
+        }
+        else if(PC >= numInstructions) {
+            cout<<"Instruction set completed"<<endl;
+            toQuit = true;
+        }
+        else if(opcode == "LABEL"){
+            PC++;
+        }
+        else {
+            throw(1);
+        }
+        
+        
+    }
+
+    void output() {
+        cout << "ACC: " << ACC << endl;
+        cout << "Memory: " << endl;
+        for(auto& [key, value] : memory) {
+            cout << key << ": " << value << endl;
+        }
+        cout << "Registers: " << endl;
+        for(auto& [key, value] : registers) {
+            cout << key << ": " << value << endl;
+        }
+        cout << "Stack: " << endl;
+        while(!stk.empty()) {
+            cout << stk.top() << endl;
+            stk.pop();
+        }
     }
 
     void run() {
         while(!toQuit) {
             executeInstruction();
+            output();
+            getchar();
             //The above function is not complete yet
             //Add input output logic here
         }

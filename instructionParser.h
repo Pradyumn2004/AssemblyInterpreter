@@ -94,8 +94,11 @@ private:
                 line = line.substr(i + 1);
                 break;
             }
+            else {
+                opcode = line;
+            }
         }
-        const set<string> opcode0 = {"HALT", "NOP", "NOT", "PUSH", "POP", "OUT", "IN", "RET", "CMP"};
+        const set<string> opcode0 = {"HLT", "NOP", "NOT", "PUSH", "POP", "OUT", "IN", "RET", "CMP"};
         const set<string> opcode1 = {"ADD", "SUB", "MUL", "DIV", "MOD", // Arithmetic operations
                                      "AND", "OR", "XOR",                // Logical operations
                                      "LSL", "LSR", "ASR",               // Shift operations
@@ -142,8 +145,9 @@ private:
             while (i < line.size())
             {
                 operand2 += line[i];
+                i++;
             }
-            return {opcode, operand1, operand2, ""}
+            return {opcode, operand1, operand2, 0};
         }
         if (immxOpcode.find(opcode) != immxOpcode.end())
         {
@@ -173,7 +177,7 @@ private:
                 s += line[i];
             }
             immediate = stoi(s);
-            return { opcode, operand1, "", immediate }
+            return { opcode, operand1, "", immediate };
         }
     }
 };

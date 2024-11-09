@@ -11,10 +11,11 @@ class Interpreter {
 private:
     int ACC = 0;                     // Accumulator register
     map<string, int> memory; // Memory storage for addresses
-    map<string, int> registers = { {"R1", 0}, {"R2", 0}, {"R3", 0} }; // Extra registers
+    map<string, int> registers = { {"R1", 0}, {"R2", 0}, {"R3", 0}, {"RA", 0} }; // Extra registers
     stack<int> stk;                  // Stack for PUSH and POP operations
     map<string, int> labels; // Labels for control flow (mapping label to line index)
     vector<string> program;           // Holds the program lines
+    int PC = 0;                      // Program counter
 
     // Helper to parse line into opcode and operand
     pair<string, string> parseInstruction(const string &line) {

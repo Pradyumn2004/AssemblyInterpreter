@@ -1,9 +1,13 @@
+#ifndef INTERPRETER_H
+#define INTERPRETER_H
+
 #include <iostream>
 #include <string>
 #include <map>
 #include <stack>
 #include <vector>
 #include <sstream>
+#include "instructionParser.h"
 
 using namespace std;
 
@@ -17,35 +21,34 @@ private:
     vector<string> program;           // Holds the program lines
     int PC = 0;                      // Program counter
 
+    string filePath;
+
+    InstructionParser parser;
+
     // Helper to parse line into opcode and operand
-    pair<string, string> parseInstruction(const string &line) {
-        
-    }
 
     // Load a value from memory or register
-    int loadValue(const string &operand) {
-        
+    int loadValue(const string &address) {
+        ACC = memory[address];
     }
 
     // Store value in memory or register
-    void storeValue(const string &operand, int value) {
-        
+    void storeValue(const string &address) {
+        memory[address] = ACC;
     }
 
 public:
-    void loadProgram(const vector<string> &prog) {
-        
+    void setFilePath(string path) {
+        filePath = path;
+    }
+
+    void init() {
+
     }
 
     void run() {
-        for (int i = 0; i < program.size(); ++i) {
-            auto [opcode, operand] = parseInstruction(program[i]);
-
-            // Ignore label lines
-            if (opcode.back() == ':') continue;
-
-            // Execute the instruction
-            
-        }
+        
     }
 };
+
+#endif

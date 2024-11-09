@@ -6,14 +6,14 @@ mod X
 AND X
 OR  X
 XOR X
-LSL
-LSR
-ASR
+LSL X
+LSR X
+ASR X
 NOT
 
 LD X
 ST X
-MOV R, X: Move value from register/memory X to register R
+MOV R, X: Move value from register X to register R
 MOVI R, immx: Move immx to R
 SWAP R1,R2
 
@@ -25,8 +25,8 @@ JGT LABEL
 JNE LABEL
 JLT LABEL
 
-PUSH
-POP
+PUSH //push the value of accumulator onto the stack
+POP //copy the value of top of stack onto 
 
 CALL LABEL
 RET

@@ -7,7 +7,7 @@
 
 class InstructionParser {
     public:
-        void loadProgram(const vector<string> &prog, map<string, int> &labels) {
+        int loadProgram(string filepath, map<string, int> &labels) {
             
         }
 

@@ -1,4 +1,4 @@
-add X : add value at memory/register X to ACC
+add X : add value at register X to ACC
 sub X
 mul X
 div X
@@ -11,8 +11,8 @@ LSR X
 ASR X
 NOT
 
-LD X
-ST X
+LD X : Load memory address X into accumulator
+ST X : Store ACC at memory address X
 MOV R, X: Move value from register X to register R
 MOVI R, immx: Move immx to R
 SWAP R1,R2

@@ -1,0 +1,38 @@
+add X : add value at register X to ACC
+sub X
+mul X
+div X
+mod X
+AND X
+OR  X
+XOR X
+LSL X
+LSR X
+ASR X
+NOT
+
+LD X : Load memory address X into accumulator
+ST X : Store ACC at memory address X
+MOV R, X: Move value from register X to register R
+MOVI R, immx: Move immx to R
+SWAP R1,R2
+
+CMP // set the gt, eq flags for ACC wrt 0
+
+JMP LABEL
+JEQ LABEL
+JGT LABEL
+JNE LABEL
+JLT LABEL
+
+PUSH
+POP
+
+CALL LABEL
+RET
+
+IN //read value given by user in ACC
+OUT //output the value in ACC
+
+HLT
+NOP

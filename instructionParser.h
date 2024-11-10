@@ -47,7 +47,41 @@ public:
         return instructions[index];
     }
 
+    string getEncodedInstruction(int index) {
+        return encodeInstruction(instructions[index]);
+    }
+
+
 private:
+    string encodeInstruction(Instruction inst) {
+        string ans;
+        const set<string> opcode0 = {"HLT", "NOP", "NOT", "PUSH", "POP", "OUT", "IN", "RET", "CMP"};
+        const set<string> opcode1 = {"ADD", "SUB", "MUL", "DIV", "MOD", // Arithmetic operations
+                                     "AND", "OR", "XOR",                // Logical operations
+                                     "LSL", "LSR", "ASR",               // Shift operations
+                                     "LD", "ST"};
+        const set<string> branchOpcodes = {"JMP", "JEQ", "JGT", "JNE", "JLT", "CALL"};
+        const set<string> opcode2 = {"MOV", "SWAP"};
+        const set<string> immxOpcode = {"MOVI"};
+
+        if(opcode0.find(inst.opcode) != opcode0.end()) {
+            ans = inst.opcode;
+        }
+        else if(opcode1.find(inst.opcode) != opcode1.end()) {
+            ans = inst.opcode + " " + inst.operand1;
+        }
+        else if(branchOpcodes.find(inst.opcode) != branchOpcodes.end()) {
+            ans = inst.opcode + " " + inst.operand1;
+        }
+        else if(opcode2.find(inst.opcode) != opcode2.end()) {
+            ans = inst.opcode + " " + inst.operand1 + ", " + inst.operand2;
+        }
+        else if(immxOpcode.find(inst.opcode) != immxOpcode.end()) {
+            ans = inst.opcode + " " + inst.operand1 + ", " + to_string(inst.immediate);
+        }
+        return ans;
+    }
+    
     vector<Instruction> instructions;
 
     Instruction parseInstruction(string line)

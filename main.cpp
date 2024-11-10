@@ -29,6 +29,5 @@ int main() {
     
     // Load the program and run the interpreter
     interpreter.run();
-
     return 0;
 }

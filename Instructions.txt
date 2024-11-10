@@ -1,3 +1,7 @@
+Registers : ACC, R1, R2, R3, RA (return address)
+
+Flags : Flags.GT and Flags.EQ
+
 add X : add value at register X to ACC
 sub X
 mul X
@@ -9,17 +13,17 @@ XOR X
 LSL X
 LSR X
 ASR X
-NOT
+NOT : takes not of value in ACC
 
 LD X : Load memory address X into accumulator
 ST X : Store ACC at memory address X
 MOV R, X: Move value from register X to register R
 MOVI R, immx: Move immx to R
-SWAP R1,R2
+SWAP R1,R2 : Swaps values in R1 and R2
 
 CMP // set the gt, eq flags for ACC wrt 0
 
-JMP LABEL
+JMP LABEL 
 JEQ LABEL
 JGT LABEL
 JNE LABEL

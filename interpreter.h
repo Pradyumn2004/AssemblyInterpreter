@@ -8,6 +8,7 @@
 #include <vector>
 #include <sstream>
 #include "instructionParser.h"
+#include "IOHandler.h"
 
 using namespace std;
 
@@ -19,6 +20,8 @@ private:
     map<string, int> labels; // Labels for control flow (mapping label to line index)
     int PC = 0;                      // Program counter
     int numInstructions;
+
+    IOHandler ioHandler;
 
     //flags registers
     bool greater;
@@ -37,13 +40,15 @@ public:
 
     void init() {
         numInstructions = parser.loadProgram(filePath, labels);
+        ioHandler.setNumInstructions(numInstructions);
+        ioHandler.init();
     }
 
 
     //executes the instruction and updates PC, flags, memory and registers
     void executeInstruction() {
         if(PC >= numInstructions) {
-            cout << "Program Completed\n";
+            ioHandler.updateOutput("Program Finished");
             toQuit = true;
             return;
         }
@@ -51,73 +56,108 @@ public:
         const auto& opcode = currentInstruction.opcode;
         if(opcode == "ADD") {
             registers["ACC"] += registers[currentInstruction.operand1];
+            ioHandler.updateRegister("ACC", registers["ACC"]);
             PC++;
+            ioHandler.updatePC(PC);
         }
         else if(opcode == "SUB") {
             registers["ACC"] -= registers[currentInstruction.operand1];
+            ioHandler.updateRegister("ACC", registers["ACC"]);
             PC++;
+            ioHandler.updatePC(PC);
         }
         else if(opcode == "MUL") {
             registers["ACC"] *= registers[currentInstruction.operand1];
+            ioHandler.updateRegister("ACC", registers["ACC"]);
             PC++;
+            ioHandler.updatePC(PC);
         }
         else if(opcode == "DIV") {
             registers["ACC"] /= registers[currentInstruction.operand1];
+            ioHandler.updateRegister("ACC", registers["ACC"]);
             PC++;
+            ioHandler.updatePC(PC);
         }
         else if(opcode == "MOD") {
             registers["ACC"] %= registers[currentInstruction.operand1];
+            ioHandler.updateRegister("ACC", registers["ACC"]);
             PC++;
+            ioHandler.updatePC(PC);
         }
         else if(opcode == "AND") {
             registers["ACC"] &= registers[currentInstruction.operand1];
+            ioHandler.updateRegister("ACC", registers["ACC"]);
             PC++;
+            ioHandler.updatePC(PC);
         }
         else if(opcode == "OR") {
             registers["ACC"] |= registers[currentInstruction.operand1];
+            ioHandler.updateRegister("ACC", registers["ACC"]);
             PC++;
+            ioHandler.updatePC(PC);
         }
         else if(opcode == "XOR") {
             registers["ACC"] ^= registers[currentInstruction.operand1];
+            ioHandler.updateRegister("ACC", registers["ACC"]);
             PC++;
+            ioHandler.updatePC(PC);
         }
         else if(opcode == "LSL") {
             registers["ACC"] <<= registers[currentInstruction.operand1];
+            ioHandler.updateRegister("ACC", registers["ACC"]);
             PC++;
+            ioHandler.updatePC(PC);
         }
         else if(opcode == "LSR") {
             registers["ACC"] = ((unsigned int)registers["ACC"]) >> registers[currentInstruction.operand1];
+            ioHandler.updateRegister("ACC", registers["ACC"]);
             PC++;
+            ioHandler.updatePC(PC);
         }
         else if(opcode == "ASR") {
             registers["ACC"] >>= registers[currentInstruction.operand1];
+            ioHandler.updateRegister("ACC", registers["ACC"]);
             PC++;
+            ioHandler.updatePC(PC);
         }
         else if(opcode == "NOT") {
             registers["ACC"] = ~registers["ACC"];
+            ioHandler.updateRegister("ACC", registers["ACC"]);
             PC++;
+            ioHandler.updatePC(PC);
         }
         else if(opcode == "LD") {
             registers["ACC"] = memory[currentInstruction.operand1];
+            ioHandler.updateRegister("ACC", registers["ACC"]);
             PC++;
+            ioHandler.updatePC(PC);
         }
         else if(opcode == "ST") {
             memory[currentInstruction.operand1] = registers["ACC"];
+            ioHandler.updateMemory(currentInstruction.operand1, memory[currentInstruction.operand1]);
             PC++;
+            ioHandler.updatePC(PC);
         }
         else if(opcode == "MOV") {
             registers[currentInstruction.operand1] = registers[currentInstruction.operand2];
+            ioHandler.updateRegister(currentInstruction.operand1, registers[currentInstruction.operand1]);
             PC++;
+            ioHandler.updatePC(PC);
         }
         else if(opcode == "MOVI") {
             registers[currentInstruction.operand1] = currentInstruction.immediate;
+            ioHandler.updateRegister(currentInstruction.operand1, registers[currentInstruction.operand1]);
             PC++;
+            ioHandler.updatePC(PC);
         }
         else if(opcode == "SWAP") {
             int temp = registers[currentInstruction.operand1];
             registers[currentInstruction.operand1] = registers[currentInstruction.operand2];
             registers[currentInstruction.operand2] = temp;
+            ioHandler.updateRegister(currentInstruction.operand1, registers[currentInstruction.operand1]);
+            ioHandler.updateRegister(currentInstruction.operand2, registers[currentInstruction.operand2]);
             PC++;
+            ioHandler.updatePC(PC);
         }
         else if(opcode == "CMP") {
             if(registers["ACC"] > 0) {
@@ -132,133 +172,106 @@ public:
             else {
                 equal = false;
             }
+            ioHandler.updateFlags(greater, equal);
             PC++;
+            ioHandler.updatePC(PC);
         }
         else if(opcode == "JMP") {
             PC = labels[currentInstruction.operand1];
+            ioHandler.updatePC(PC);
         }
         else if(opcode == "JEQ") {
             if(equal) {
                 PC = labels[currentInstruction.operand1];
+                ioHandler.updatePC(PC);
             }
         }
         else if(opcode == "JGT") {
             if(greater) {
                 PC = labels[currentInstruction.operand1];
+                ioHandler.updatePC(PC);
             }
         }
         else if(opcode == "JNE") {
             if(!equal) {
                 PC = labels[currentInstruction.operand1];
+                ioHandler.updatePC(PC);
             }
         }
         else if(opcode == "JLT") {
             if(!greater && !equal) {
                 PC = labels[currentInstruction.operand1];
+                ioHandler.updatePC(PC);
             }
         }
         else if(opcode == "PUSH") {
             stk.push(registers["ACC"]);
+            ioHandler.pushIntoStack(registers["ACC"]);
+            PC++;
+            ioHandler.updatePC(PC);
         }
         else if(opcode == "POP") {
             registers["ACC"] = stk.top();
             stk.pop();
+            ioHandler.popFromStack();
+            ioHandler.updateRegister("ACC", registers["ACC"]);
+            PC++;
+            ioHandler.updatePC(PC);
         }
         else if(opcode == "CALL") {
-            stk.push(PC);
+            registers["RA"] = PC+1;
+            ioHandler.updateRegister("RA", registers["RA"]);
             PC = labels[currentInstruction.operand1];
+            ioHandler.updatePC(PC);
         }
         else if(opcode == "RET") {
-            PC = stk.top();
-            stk.pop();
+            PC = registers["RA"];
+            ioHandler.updatePC(PC);
         }
         else if(opcode == "HLT") {
             toQuit = true;
         }
         else if(opcode == "IN"){
-            cout << "Enter a number: ";
-            cin >> registers["ACC"];
-            cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            ioHandler.updateOutput("Enter the input");
+            registers["ACC"] = ioHandler.takeInput(false);
             PC++;
+            ioHandler.updateRegister("ACC", registers["ACC"]);
+            ioHandler.updatePC(PC);
         }
         else if(opcode == "OUT"){
-            cout << "Output: " << registers["ACC"] << endl;
+            ioHandler.updateOutput(to_string(registers["ACC"]));
             PC++;
+            ioHandler.updatePC(PC);
         }
         else if(opcode == "LABEL"){
             PC++;
+            ioHandler.updatePC(PC);
         }
         else {
             throw(1);
         }
     }
 
-    void output() {
-        cout << "ACC: " << registers["ACC"] << endl;
-        cout << "Memory: " << endl;
-        for(auto& [key, value] : memory) {
-            cout << key << ": " << value << endl;
-        }
-        cout << "Registers: " << endl;
-        for(auto& [key, value] : registers) {
-            cout << key << ": " << value << endl;
-        }
-        cout << "Stack: " << endl;
-        auto temp = stk;
-        while(!temp.empty()) {
-            cout << temp.top() << endl;
-            temp.pop();
-        }
-    }
-
-    void insertString(string* out, string str, int i, int j) {
-        for(int k = 0; k < str.size() && j+k < 80; k++) {
-            out[i][j+k] = str[k];
-        }
-    }
-
-    void interactiveOutput() {
-        string out[24];
-        for(int i = 0; i < 24; i++) {
-            out[i].assign(80,' ');
-        }
-    }
-
-    string encodeInstruction(Instruction inst) {
-        string ans;
-        const set<string> opcode0 = {"HLT", "NOP", "NOT", "PUSH", "POP", "OUT", "IN", "RET", "CMP"};
-        const set<string> opcode1 = {"ADD", "SUB", "MUL", "DIV", "MOD", // Arithmetic operations
-                                     "AND", "OR", "XOR",                // Logical operations
-                                     "LSL", "LSR", "ASR",               // Shift operations
-                                     "LD", "ST"};
-        const set<string> branchOpcodes = {"JMP", "JEQ", "JGT", "JNE", "JLT", "CALL"};
-        const set<string> opcode2 = {"MOV", "SWAP"};
-        const set<string> immxOpcode = {"MOVI"};
-
-        if(opcode0.find(inst.opcode) != opcode0.end()) {
-            ans = inst.opcode;
-        }
-        else if(opcode1.find(inst.opcode) != opcode1.end()) {
-            ans = inst.opcode + " " + inst.operand1;
-        }
-        else if(branchOpcodes.find(inst.opcode) != branchOpcodes.end()) {
-            ans = inst.opcode + " " + inst.operand1;
-        }
-        else if(opcode2.find(inst.opcode) != opcode2.end()) {
-            ans = inst.opcode + " " + inst.operand1 + ", " + inst.operand2;
-        }
-        else if(immxOpcode.find(inst.opcode) != immxOpcode.end()) {
-            ans = inst.opcode + " " + inst.operand1 + ", " + to_string(inst.immediate);
-        }
-        return ans;
-    }
-
     void run() {
         while(!toQuit) {
-            executeInstruction();
-            output();    
-            getchar();
+            char inp = ioHandler.takeInput(true);
+            ioHandler.updateOutput("");
+            switch(inp) {
+                case 'e':
+                    executeInstruction();
+                    break;
+                case 'u':
+                    break;
+                case 'd':
+                    break;
+                case 'q':
+                    toQuit = true;
+                    break;                
+            }
+            if(toQuit) break;
         }
+
+        getch();
     }
 };
 

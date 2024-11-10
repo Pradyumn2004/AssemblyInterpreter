@@ -5,7 +5,6 @@
 #include <string>
 #include <map>
 #include <stack>
-// #include <conio.h>
 #include <vector>
 #include <sstream>
 #include "instructionParser.h"
@@ -14,9 +13,8 @@ using namespace std;
 
 class Interpreter {
 private:
-    int ACC = 0;                     // Accumulator register
     map<string, int> memory; // Memory storage for addresses
-    map<string, int> registers = { {"R1", 0}, {"R2", 0}, {"R3", 0}, {"RA", 0} }; // Extra registers
+    map<string, int> registers = { {"R1", 0}, {"R2", 0}, {"R3", 0}, {"RA", 0}, {"ACC",0}}; // Registers
     stack<int> stk;                  // Stack for PUSH and POP operations
     map<string, int> labels; // Labels for control flow (mapping label to line index)
     int PC = 0;                      // Program counter
@@ -44,62 +42,67 @@ public:
 
     //executes the instruction and updates PC, flags, memory and registers
     void executeInstruction() {
+        if(PC >= numInstructions) {
+            cout << "Program Completed\n";
+            toQuit = true;
+            return;
+        }
         Instruction currentInstruction = parser.getInstruction(PC);
         const auto& opcode = currentInstruction.opcode;
         if(opcode == "ADD") {
-            ACC += registers[currentInstruction.operand1];
+            registers["ACC"] += registers[currentInstruction.operand1];
             PC++;
         }
         else if(opcode == "SUB") {
-            ACC -= registers[currentInstruction.operand1];
+            registers["ACC"] -= registers[currentInstruction.operand1];
             PC++;
         }
         else if(opcode == "MUL") {
-            ACC *= registers[currentInstruction.operand1];
+            registers["ACC"] *= registers[currentInstruction.operand1];
             PC++;
         }
         else if(opcode == "DIV") {
-            ACC /= registers[currentInstruction.operand1];
+            registers["ACC"] /= registers[currentInstruction.operand1];
             PC++;
         }
         else if(opcode == "MOD") {
-            ACC %= registers[currentInstruction.operand1];
+            registers["ACC"] %= registers[currentInstruction.operand1];
             PC++;
         }
         else if(opcode == "AND") {
-            ACC &= registers[currentInstruction.operand1];
+            registers["ACC"] &= registers[currentInstruction.operand1];
             PC++;
         }
         else if(opcode == "OR") {
-            ACC |= registers[currentInstruction.operand1];
+            registers["ACC"] |= registers[currentInstruction.operand1];
             PC++;
         }
         else if(opcode == "XOR") {
-            ACC ^= registers[currentInstruction.operand1];
+            registers["ACC"] ^= registers[currentInstruction.operand1];
             PC++;
         }
         else if(opcode == "LSL") {
-            ACC <<= registers[currentInstruction.operand1];
+            registers["ACC"] <<= registers[currentInstruction.operand1];
             PC++;
         }
         else if(opcode == "LSR") {
-            ACC = ((unsigned int)ACC) >> registers[currentInstruction.operand1];
+            registers["ACC"] = ((unsigned int)registers["ACC"]) >> registers[currentInstruction.operand1];
             PC++;
         }
         else if(opcode == "ASR") {
-            ACC >>= registers[currentInstruction.operand1];
+            registers["ACC"] >>= registers[currentInstruction.operand1];
             PC++;
         }
         else if(opcode == "NOT") {
-            ACC = ~ACC;
+            registers["ACC"] = ~registers["ACC"];
             PC++;
         }
         else if(opcode == "LD") {
-            ACC = memory[currentInstruction.operand1];
+            registers["ACC"] = memory[currentInstruction.operand1];
             PC++;
         }
         else if(opcode == "ST") {
-            memory[currentInstruction.operand1] = ACC;
+            memory[currentInstruction.operand1] = registers["ACC"];
             PC++;
         }
         else if(opcode == "MOV") {
@@ -117,13 +120,13 @@ public:
             PC++;
         }
         else if(opcode == "CMP") {
-            if(ACC > 0) {
+            if(registers["ACC"] > 0) {
                 greater = true;
             }
             else {
                 greater = false;
             }
-            if(ACC == 0) {
+            if(registers["ACC"] == 0) {
                 equal = true;
             }
             else {
@@ -155,10 +158,10 @@ public:
             }
         }
         else if(opcode == "PUSH") {
-            stk.push(ACC);
+            stk.push(registers["ACC"]);
         }
         else if(opcode == "POP") {
-            ACC = stk.top();
+            registers["ACC"] = stk.top();
             stk.pop();
         }
         else if(opcode == "CALL") {
@@ -174,16 +177,13 @@ public:
         }
         else if(opcode == "IN"){
             cout << "Enter a number: ";
-            cin >> ACC;
+            cin >> registers["ACC"];
+            cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             PC++;
         }
         else if(opcode == "OUT"){
-            cout << "Output: " << ACC << endl;
+            cout << "Output: " << registers["ACC"] << endl;
             PC++;
-        }
-        else if(PC >= numInstructions) {
-            cout<<"Instruction set completed"<<endl;
-            toQuit = true;
         }
         else if(opcode == "LABEL"){
             PC++;
@@ -191,12 +191,10 @@ public:
         else {
             throw(1);
         }
-        
-        
     }
 
     void output() {
-        cout << "ACC: " << ACC << endl;
+        cout << "ACC: " << registers["ACC"] << endl;
         cout << "Memory: " << endl;
         for(auto& [key, value] : memory) {
             cout << key << ": " << value << endl;
@@ -206,19 +204,60 @@ public:
             cout << key << ": " << value << endl;
         }
         cout << "Stack: " << endl;
-        while(!stk.empty()) {
-            cout << stk.top() << endl;
-            stk.pop();
+        auto temp = stk;
+        while(!temp.empty()) {
+            cout << temp.top() << endl;
+            temp.pop();
         }
+    }
+
+    void insertString(string* out, string str, int i, int j) {
+        for(int k = 0; k < str.size() && j+k < 80; k++) {
+            out[i][j+k] = str[k];
+        }
+    }
+
+    void interactiveOutput() {
+        string out[24];
+        for(int i = 0; i < 24; i++) {
+            out[i].assign(80,' ');
+        }
+    }
+
+    string encodeInstruction(Instruction inst) {
+        string ans;
+        const set<string> opcode0 = {"HLT", "NOP", "NOT", "PUSH", "POP", "OUT", "IN", "RET", "CMP"};
+        const set<string> opcode1 = {"ADD", "SUB", "MUL", "DIV", "MOD", // Arithmetic operations
+                                     "AND", "OR", "XOR",                // Logical operations
+                                     "LSL", "LSR", "ASR",               // Shift operations
+                                     "LD", "ST"};
+        const set<string> branchOpcodes = {"JMP", "JEQ", "JGT", "JNE", "JLT", "CALL"};
+        const set<string> opcode2 = {"MOV", "SWAP"};
+        const set<string> immxOpcode = {"MOVI"};
+
+        if(opcode0.find(inst.opcode) != opcode0.end()) {
+            ans = inst.opcode;
+        }
+        else if(opcode1.find(inst.opcode) != opcode1.end()) {
+            ans = inst.opcode + " " + inst.operand1;
+        }
+        else if(branchOpcodes.find(inst.opcode) != branchOpcodes.end()) {
+            ans = inst.opcode + " " + inst.operand1;
+        }
+        else if(opcode2.find(inst.opcode) != opcode2.end()) {
+            ans = inst.opcode + " " + inst.operand1 + ", " + inst.operand2;
+        }
+        else if(immxOpcode.find(inst.opcode) != immxOpcode.end()) {
+            ans = inst.opcode + " " + inst.operand1 + ", " + to_string(inst.immediate);
+        }
+        return ans;
     }
 
     void run() {
         while(!toQuit) {
             executeInstruction();
-            output();
+            output();    
             getchar();
-            //The above function is not complete yet
-            //Add input output logic here
         }
     }
 };

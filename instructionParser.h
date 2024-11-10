@@ -179,6 +179,7 @@ private:
             immediate = stoi(s);
             return { opcode, operand1, "", immediate };
         }
+        return {"INVALID", "", "", 0};
     }
 };
 

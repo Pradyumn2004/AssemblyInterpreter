@@ -49,6 +49,9 @@ public:
 
     void updateOutput(string output) {
         this->output = output;
+        wclear(outp);
+        mvwprintw(outp,0,0,"%s",output.c_str());
+        wrefresh(outp);
     }
 
     void pushIntoStack(int value) {
@@ -78,7 +81,12 @@ public:
         pcw = newwin(21,2,2,0);
         mvwprintw(pcw,1,0,"->");
         wrefresh(pcw);
+
+        outp = newwin(1,30,4,4);
+        mvwprintw(outp,0,0,"%s",output.c_str());
+        wrefresh(outp);
     }
+
 
     int takeInput(bool isChar) {
         if(isChar) {
@@ -96,7 +104,7 @@ public:
         }
         else {
             char a;
-            int res;
+            int res = 0;
             while(true) {
                 a = getch();
                 if(a == '\n'){
@@ -131,7 +139,8 @@ private:
     WINDOW* pcw;
     WINDOW* mem;
     WINDOW* prompt;
-    WINDOW* io;
+    WINDOW* inp;
+    WINDOW* outp;
     WINDOW* flagsw;
     WINDOW* stackw;
     string output;

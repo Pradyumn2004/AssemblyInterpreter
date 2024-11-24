@@ -67,24 +67,90 @@ public:
         noecho();
         cbreak();
 
+        box(stdscr,0,0);
+
         refresh();
 
-        prompt = newwin(3, 80, 0, 0);
-        box(prompt,'|','-');
+        
+
+        prompt = newwin(3, 78, 1, 1);
+        // wborder(prompt,'*','*','*','*','*','*','*','*');
+        box(prompt,0,0);
         mvwprintw(prompt,1,1,"Execute Instruction: e, Memory: u/d, Quit: q");
         wrefresh(prompt);
 
-        ins = newwin(21,16, 2, 2);
-        box(ins,'|','-');
+        ins = newwin(19,22, 4, 3);
+        box(ins,0,0);
+        // wborder(ins,'*','*','*','*','*','*','*','*');
         wrefresh(ins);
 
-        pcw = newwin(21,2,2,0);
-        mvwprintw(pcw,1,0,"->");
+        pcw = newwin(17,2,5,1);
+        mvwprintw(pcw,0,0,"->");
         wrefresh(pcw);
 
-        outp = newwin(1,30,4,4);
-        mvwprintw(outp,0,0,"%s",output.c_str());
+        outp = newwin(3,36,16,43);
+        // wborder(outp,'*','*','*','*','*','*','*','*');
+        box(outp,0,0);
+        mvwprintw(outp,1,1,"OUTPUT:");
+        mvwprintw(outp,2,1,"%s",output.c_str());
         wrefresh(outp);
+
+        inp = newwin(4, 12, 19, 43);
+        // wborder(inp,'*','*','*','*','*','*','*','*');
+        box(inp,0,0);
+        mvwprintw(inp,1,1,"INPUT:");
+        wrefresh(inp);
+
+        r1 = newwin(3, 16, 4, 26);
+        // wborder(r1,'*','*','*','*','*','*','*','*');
+        box(r1,0,0);
+        mvwprintw(r1,1,1,"R1: %d",registers["R1"]);
+        wrefresh(r1);
+
+        r2 = newwin(3, 16, 7, 26);
+        // wborder(r2,'*','*','*','*','*','*','*','*');
+        box(r2,0,0);
+        mvwprintw(r2,1,1,"R2: %d",registers["R2"]);
+        wrefresh(r2);
+
+        r3 = newwin(3, 16, 10, 26);
+        // wborder(r3,'*','*','*','*','*','*','*','*');
+        box(r3,0,0);
+        mvwprintw(r3,1,1,"R3: %d",registers["R3"]);
+        wrefresh(r3);
+
+        ra = newwin(3, 16, 13, 26);
+        // wborder(ra,'*','*','*','*','*','*','*','*');
+        box(ra,0,0);
+        mvwprintw(ra,1,1,"RA: %d",registers["RA"]);
+        wrefresh(ra);
+
+        acc = newwin(3, 16, 16, 26);
+        // wborder(acc,'*','*','*','*','*','*','*','*');
+        box(acc,0,0);
+        mvwprintw(acc,1,1,"ACC: %d",registers["ACC"]);
+        wrefresh(acc);
+
+        mem = newwin(12, 24, 4, 43);
+        // wborder(mem,'*','*','*','*','*','*','*','*');
+        box(mem,0,0);
+        mvwprintw(mem,1,1,"MEMORY");
+        wrefresh(mem);
+
+        flagsw = newwin(4, 7, 19, 30);
+        // wborder(flagsw,'*','*','*','*','*','*','*','*');
+        box(flagsw,0,0);
+        mvwprintw(flagsw,1,1,"GT: %d",greater);
+        mvwprintw(flagsw,2,1,"EQ: %d",equal);
+        wrefresh(flagsw);
+
+        stackw = newwin(12, 12, 4, 67);
+        // wborder(stackw,'*','*','*','*','*','*','*','*');
+        box(stackw,0,0);
+        mvwprintw(stackw,1,1,"STACK");
+        wrefresh(stackw);
+
+
     }
 
 

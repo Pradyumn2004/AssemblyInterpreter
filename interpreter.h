@@ -253,6 +253,7 @@ public:
     }
 
     void run() {
+        bool quit = false;
         while(!toQuit) {
             char inp = ioHandler.takeInput(true);
             ioHandler.updateOutput("");
@@ -266,12 +267,13 @@ public:
                     break;
                 case 'q':
                     toQuit = true;
+                    quit = true;
                     break;                
             }
             if(toQuit) break;
         }
 
-        getch();
+        if(!quit) getch();
     }
 };
 

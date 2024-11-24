@@ -51,6 +51,10 @@ public:
         return encodeInstruction(instructions[index]);
     }
 
+    int getNumInstructions() {
+        return instructions.size();
+    }
+
 
 private:
     string encodeInstruction(Instruction inst) {
@@ -78,6 +82,9 @@ private:
         }
         else if(immxOpcode.find(inst.opcode) != immxOpcode.end()) {
             ans = inst.opcode + " " + inst.operand1 + ", " + to_string(inst.immediate);
+        }
+        else if(inst.opcode == "LABEL") {
+            ans = "." + inst.operand1;
         }
         return ans;
     }

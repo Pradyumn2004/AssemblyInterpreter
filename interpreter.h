@@ -40,8 +40,9 @@ public:
 
     void init() {
         numInstructions = parser.loadProgram(filePath, labels);
-        ioHandler.setNumInstructions(numInstructions);
+        ioHandler.setInstructionParser(&parser);
         ioHandler.init();
+        ioHandler.updatePC(PC);
     }
 
 

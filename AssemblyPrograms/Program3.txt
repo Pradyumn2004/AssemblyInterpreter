@@ -1,8 +1,10 @@
 @Calculates factorial using stack
 
-MOVI R1, 5
-LD R1
+IN
+MOV R1, ACC
+MOV ACC,R1
 CALL factorial
+JMP END
 
 . factorial
 CMP
@@ -12,11 +14,12 @@ JMP BASE
 
 . RECURSE
 PUSH
-LD RA
+MOV ACC,RA
 PUSH
-LD R1
+MOV ACC,R1
 MOVI R2, 1
 SUB R2
+MOV R1, ACC
 CALL factorial
 POP
 MOV RA, ACC
@@ -28,6 +31,11 @@ RET
 . BASE
 MOVI R3, 1
 RET
+
+.END
+MOV ACC,R3
+OUT
+HLT
 
 
 

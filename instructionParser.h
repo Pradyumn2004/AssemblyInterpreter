@@ -216,6 +216,7 @@ private:
             while (i < line.size())
             {
                 s += line[i];
+                i++;
             }
             immediate = stoi(s);
             return { opcode, operand1, "", immediate };

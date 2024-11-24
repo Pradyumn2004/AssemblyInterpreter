@@ -14,16 +14,17 @@ class IOHandler {
 public:
 
     ~IOHandler() {
-        // delwin(r1);
-        // delwin(r2);
-        // delwin(r3);
-        // delwin(acc);
-        // delwin(ra);
-        // delwin(ins);
-        // delwin(pcw);
-        // delwin(mem);
-        // delwin(prompt);
-        // delwin(io);
+        delwin(r1);
+        delwin(r2);
+        delwin(r3);
+        delwin(acc);
+        delwin(ra);
+        delwin(ins);
+        delwin(pcw);
+        delwin(mem);
+        delwin(prompt);
+        delwin(inp);
+        delwin(outp);
         endwin();
     }
 
@@ -90,7 +91,7 @@ public:
         mvwprintw(mem,1,1,"MEMORY");
 
         for(auto it = start; it != memory.end() && cnt < 8; it++) {
-            mvwprintw(mem,++cnt,1,"%s:%d",it->first.c_str(), it->second);
+            mvwprintw(mem,++cnt + 1,1,"%s:%d",it->first.c_str(), it->second);
         }
 
         wrefresh(mem);
@@ -157,8 +158,8 @@ public:
     void updateInput(string input) {
         wclear(inp);
         box(inp,0,0);
-        mvwprintw(inp,0,0,"INPUT:");
-        mvwprintw(inp,0,0,"%s",input.c_str());
+        mvwprintw(inp,1,1,"INPUT:");
+        mvwprintw(inp,2,1,"%s",input.c_str());
         wrefresh(inp);
     }
 
@@ -301,6 +302,15 @@ public:
                         result = stoi(res);
                     }
                     return make_pair(result,false);
+                }
+                else if(a == 8 || a == 127) {
+                    if(res.empty()) {
+                        updateOutput("INVALID INPUT!");
+                        continue;
+                    }
+                    res.pop_back();
+                    updateOutput("");
+                    updateInput(res);
                 }
                 else if(a == 'q') {
                     return make_pair(-1,true);

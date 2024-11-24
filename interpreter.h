@@ -28,6 +28,7 @@ private:
     bool equal;
 
     bool toQuit = false;
+    bool quit = false;
 
     string filePath;
 
@@ -104,19 +105,19 @@ public:
             ioHandler.updatePC(PC);
         }
         else if(opcode == "LSL") {
-            registers["ACC"] <<= registers[currentInstruction.operand1];
+            registers["ACC"] <<= stoi(currentInstruction.operand1);
             ioHandler.updateRegister("ACC", registers["ACC"]);
             PC++;
             ioHandler.updatePC(PC);
         }
         else if(opcode == "LSR") {
-            registers["ACC"] = ((unsigned int)registers["ACC"]) >> registers[currentInstruction.operand1];
+            registers["ACC"] = ((unsigned int)registers["ACC"]) >> stoi(currentInstruction.operand1);
             ioHandler.updateRegister("ACC", registers["ACC"]);
             PC++;
             ioHandler.updatePC(PC);
         }
         else if(opcode == "ASR") {
-            registers["ACC"] >>= registers[currentInstruction.operand1];
+            registers["ACC"] >>= stoi(currentInstruction.operand1);
             ioHandler.updateRegister("ACC", registers["ACC"]);
             PC++;
             ioHandler.updatePC(PC);
@@ -186,10 +187,18 @@ public:
                 PC = labels[currentInstruction.operand1];
                 ioHandler.updatePC(PC);
             }
+            else{
+                PC++;
+                ioHandler.updatePC(PC);
+            }
         }
         else if(opcode == "JGT") {
             if(greater) {
                 PC = labels[currentInstruction.operand1];
+                ioHandler.updatePC(PC);
+            }
+            else{
+                PC++;
                 ioHandler.updatePC(PC);
             }
         }
@@ -198,10 +207,18 @@ public:
                 PC = labels[currentInstruction.operand1];
                 ioHandler.updatePC(PC);
             }
+            else{
+                PC++;
+                ioHandler.updatePC(PC);
+            }
         }
         else if(opcode == "JLT") {
             if(!greater && !equal) {
                 PC = labels[currentInstruction.operand1];
+                ioHandler.updatePC(PC);
+            }
+            else {
+                PC++;
                 ioHandler.updatePC(PC);
             }
         }
@@ -230,11 +247,19 @@ public:
             ioHandler.updatePC(PC);
         }
         else if(opcode == "HLT") {
+            ioHandler.updateOutput("Program Finished");
             toQuit = true;
+            return;
         }
         else if(opcode == "IN"){
             ioHandler.updateOutput("Enter the input");
-            registers["ACC"] = ioHandler.takeInput(false);
+            auto temp = ioHandler.takeInput(false);
+            registers["ACC"] = temp.first;
+            if(temp.second == true) {
+                toQuit = true;
+                quit = true;
+                return;
+            }
             PC++;
             ioHandler.updateRegister("ACC", registers["ACC"]);
             ioHandler.updatePC(PC);
@@ -248,17 +273,24 @@ public:
             PC++;
             ioHandler.updatePC(PC);
         }
+        else if(opcode == "NOP") {
+            PC++;
+            ioHandler.updatePC(PC);
+        }
         else {
             throw(1);
         }
     }
 
     void run() {
-        bool quit = false;
         while(!toQuit) {
-            char inp = ioHandler.takeInput(true);
+            pair<int,bool> inp = ioHandler.takeInput(true);
+            if(inp.second) {
+                quit = true;
+                break;
+            }
             ioHandler.updateOutput("");
-            switch(inp) {
+            switch(inp.first) {
                 case 'e':
                     executeInstruction();
                     break;

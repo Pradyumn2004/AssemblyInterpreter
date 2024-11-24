@@ -262,8 +262,10 @@ public:
                     executeInstruction();
                     break;
                 case 'u':
+                    ioHandler.updateMemoryPointer(-1);
                     break;
                 case 'd':
+                    ioHandler.updateMemoryPointer(1);
                     break;
                 case 'q':
                     toQuit = true;

@@ -72,12 +72,21 @@ This interpreter supports various types of instructions for arithmetic, logic, m
 - `NOP`: No operation, continue to the next instruction.
 
 ## Project Structure
+#### Instruction Parsing
+- The InstructionParser class is a C++ utility for parsing and managing instructions for an assembly-like language. It processes program files to load instructions, identify labels, and store them in an internal list. The class provides functionality to retrieve instructions by index and encode them into a specific string format for further processing or display. 
+- It categorizes instructions based on predefined opcode sets, such as zero-operand (HLT, NOP), one-operand (ADD, SUB), two-operand (MOV, SWAP), branch operations (JMP, CALL), and immediate-value operations (MOVI). The parseInstruction method processes lines of code, discarding comments and whitespace, and validates the syntax to classify the instruction. Labels are treated as special instructions to map their names to respective line numbers. Invalid or unsupported instructions are ignored. The encodeInstruction method converts parsed instructions back into an easily readable string format. 
+- Overall, the InstructionParser serves as a foundation for handling assembly-like programs by offering structured parsing, encoding, and label mapping capabilities.
 
-### Key Components
+#### Interpreter : Core Execution
+- The Interpreter class is the central execution engine of the assembly language simulator, responsible for processing and executing instructions parsed from an input program. It integrates closely with the InstructionParser for fetching instructions and the IOHandler for user interaction and system updates. The class maintains essential components like a program counter (PC), registers (ACC, R1, R2, etc.), memory, flags (greater/equal for comparisons), and a stack for operations like PUSH and POP.
+- It implements the logic for various opcodes, handling arithmetic (ADD, SUB, etc.), logical (AND, XOR), memory access (LD, ST), control flow (JMP, CALL, etc.), and I/O (IN, OUT) operations.
 
-  
-### Flow of Execution
 
+
+#### IOHandler
+- The IOHandler class creates a terminal-based graphical interface using the ncurses library, designed to visualize the state of an assembly interpreter in real-time. 
+- The interface is divided into several sections, each represented by a distinct window. The Instructions Window displays the list of assembly instructions, while the Register Windows (R1, R2, R3, RA, and ACC) show the current values of registers. The Flags Window indicates the status of the GT and EQ flags, and the Stack Window displays the stack contents. Additionally, the Memory Window lists memory addresses with their corresponding values, and the Output Window shows the result of executed instructions. User input is handled via the Input Window, and prompts like "Execute Instruction: e, Memory: u/d, Quit: q" are displayed in the Prompt Window. 
+- This organized layout provides a clear and interactive way to debug and monitor the state of the interpreter, making it user-friendly and efficient for analyzing program execution.
 
 ## Future Enhancements
 Potential improvements to expand functionality:
@@ -88,5 +97,9 @@ Potential improvements to expand functionality:
 ## Usage
 
 To run the interpreter:
-1. Write the assembly program in a `.asm` file with supported instructions.
-2. Run ./interpreter `<filepath>`
+1. Write the assembly program in a `.txt` file with supported instructions.
+2. Install the ncurses library by running `sudo apt-get libncurses-dev`
+3. Build the interpreter by running `g++ main.cpp -lncurses -o main`
+4. Run the binary by `./main {Program filepath}`
+
+(the above steps are for unix based operating systems, if you're on windows, install ncurses library, compile and link ncurses and run the exe file with the cli argument as the filepath of the assembly program.)

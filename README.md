@@ -98,7 +98,7 @@ Potential improvements to expand functionality:
 
 To run the interpreter:
 1. Write the assembly program in a `.txt` file with supported instructions.
-2. Install the ncurses library by running `sudo apt-get libncurses-dev`
+2. Install the ncurses library by running `sudo apt-get install libncurses-dev`
 3. Build the interpreter by running `g++ main.cpp -lncurses -o main`
 4. Run the binary by `./main {Program filepath}`
 
